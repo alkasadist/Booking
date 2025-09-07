@@ -1,5 +1,7 @@
 package com.example.booking;
 
+import com.example.booking.enums.RoomType;
+import com.example.booking.enums.UserRole;
 import com.example.booking.models.*;
 
 import java.time.LocalDate;
@@ -29,17 +31,17 @@ public final class Server {
     }
 
     private void migrateStockData() {
-        User steve = new User("Steven", false);
-        User ann = new User("Ann", false);
-        User donald = new User("Donald", true);
+        User steve = new User("Steven", UserRole.USER);
+        User ann = new User("Ann", UserRole.USER);
+        User donald = new User("Donald", UserRole.ADMIN);
 
         instance.addUser(steve);
         instance.addUser(ann);
         instance.addUser(donald);
 
-        Room room10 = new Room(10, Room.RoomType.ECONOMY);
-        Room room11 = new Room(11, Room.RoomType.LUX);
-        Room room12 = new Room(12, Room.RoomType.PRESIDENTIAL);
+        Room room10 = new Room(10, RoomType.ECONOMY);
+        Room room11 = new Room(11, RoomType.LUX);
+        Room room12 = new Room(12, RoomType.PRESIDENTIAL);
 
         instance.addRoom(room10);
         instance.addRoom(room11);

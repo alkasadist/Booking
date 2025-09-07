@@ -1,5 +1,7 @@
 package com.example.booking;
 
+import com.example.booking.enums.RoomType;
+import com.example.booking.enums.UserRole;
 import com.example.booking.models.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +57,7 @@ public class ServerTest {
     @Test
     @DisplayName("Add user successfully")
     void testAddUser() {
-        User newUser = new User("John", false);
+        User newUser = new User("John", UserRole.USER);
         int initialSize = server.getUsers().size();
 
         server.addUser(newUser);
@@ -67,7 +69,7 @@ public class ServerTest {
     @Test
     @DisplayName("Add room successfully")
     void testAddRoom() {
-        Room newRoom = new Room(20, Room.RoomType.ECONOMY);
+        Room newRoom = new Room(20, RoomType.ECONOMY);
         int initialSize = server.getRooms().size();
 
         server.addRoom(newRoom);
@@ -79,7 +81,7 @@ public class ServerTest {
     @Test
     @DisplayName("Add room with existing number throws exception")
     void testAddDuplicateRoom() {
-        Room duplicateRoom = new Room(10, Room.RoomType.LUX);
+        Room duplicateRoom = new Room(10, RoomType.LUX);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -243,7 +245,7 @@ public class ServerTest {
     @Test
     @DisplayName("Delete non-existing user does nothing")
     void testDeleteNonExistingUser() {
-        User nonExistingUser = new User("Non-existing", false);
+        User nonExistingUser = new User("Non-existing", UserRole.USER);
         int initialSize = server.getUsers().size();
 
         server.deleteUser(nonExistingUser);
@@ -275,9 +277,9 @@ public class ServerTest {
         List<Reservation> reservations = server.getReservations();
 
         assertThrows(UnsupportedOperationException.class,
-                () -> users.add(new User("Test", false)));
+                () -> users.add(new User("Test", UserRole.USER)));
         assertThrows(UnsupportedOperationException.class,
-                () -> rooms.add(new Room(999, Room.RoomType.ECONOMY)));
+                () -> rooms.add(new Room(999, RoomType.ECONOMY)));
         assertThrows(UnsupportedOperationException.class,
                 () -> reservations.clear());
     }
@@ -372,7 +374,7 @@ public class ServerTest {
         User user = server.getUsers().getFirst();
 
         for (int i = 100; i < 200; i++) {
-            server.addRoom(new Room(i, Room.RoomType.ECONOMY));
+            server.addRoom(new Room(i, RoomType.ECONOMY));
         }
 
         long startTime = System.currentTimeMillis();
@@ -398,19 +400,19 @@ public class ServerTest {
                 .filter(r -> r.getNumber() == 10)
                 .findFirst()
                 .orElseThrow();
-        assertEquals(Room.RoomType.ECONOMY, economyRoom.getType());
+        assertEquals(RoomType.ECONOMY, economyRoom.getType());
 
         Room luxRoom = rooms.stream()
                 .filter(r -> r.getNumber() == 11)
                 .findFirst()
                 .orElseThrow();
-        assertEquals(Room.RoomType.LUX, luxRoom.getType());
+        assertEquals(RoomType.LUX, luxRoom.getType());
 
         Room presidentialRoom = rooms.stream()
                 .filter(r -> r.getNumber() == 12)
                 .findFirst()
                 .orElseThrow();
-        assertEquals(Room.RoomType.PRESIDENTIAL, presidentialRoom.getType());
+        assertEquals(RoomType.PRESIDENTIAL, presidentialRoom.getType());
     }
 
     @Test
@@ -422,19 +424,19 @@ public class ServerTest {
                 .filter(u -> u.getName().equals("Donald"))
                 .findFirst()
                 .orElseThrow();
-        assertTrue(donald.isAdmin(), "Donald should be admin");
+        assertSame(UserRole.ADMIN, donald.getRole(), "Donald should be admin");
 
         User steven = users.stream()
                 .filter(u -> u.getName().equals("Steven"))
                 .findFirst()
                 .orElseThrow();
-        assertFalse(steven.isAdmin(), "Steven should not be admin");
+        assertNotSame(UserRole.ADMIN, steven.getRole(), "Steven should not be admin");
 
         User ann = users.stream()
                 .filter(u -> u.getName().equals("Ann"))
                 .findFirst()
                 .orElseThrow();
-        assertFalse(ann.isAdmin(), "Ann should not be admin");
+        assertNotSame(UserRole.ADMIN, ann.getRole(), "Ann should not be admin");
     }
 
     @Test
@@ -457,8 +459,8 @@ public class ServerTest {
         int initialRooms = server.getRooms().size();
         int initialReservations = server.getReservations().size();
 
-        User newUser = new User("TestUser", false);
-        Room newRoom = new Room(999, Room.RoomType.LUX);
+        User newUser = new User("TestUser", UserRole.USER);
+        Room newRoom = new Room(999, RoomType.LUX);
 
         server.addUser(newUser);
         server.addRoom(newRoom);

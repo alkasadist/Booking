@@ -1,5 +1,6 @@
 package com.example.booking.models;
 
+import com.example.booking.enums.UserRole;
 import lombok.Data;
 import java.util.UUID;
 
@@ -7,11 +8,11 @@ import java.util.UUID;
 public class User {
     private String id;
     private String name;
-    private boolean admin;
+    private UserRole role;
 
-    public User(String name, boolean admin) {
+    public User(String name, UserRole role) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
-        this.admin = admin;
+        this.role = role;
     }
 }
