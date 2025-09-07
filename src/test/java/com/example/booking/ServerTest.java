@@ -176,8 +176,8 @@ public class ServerTest {
         Reservation overlappingReservation = new Reservation(
                 user.getId(),
                 10,
-                LocalDate.of(2025, 9, 8),
-                LocalDate.of(2025, 9, 15)
+                LocalDate.of(2030, 12, 8),
+                LocalDate.of(2030, 12, 15)
         );
 
         IllegalArgumentException exception = assertThrows(
