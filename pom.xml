@@ -12,8 +12,8 @@
     <groupId>lab</groupId>
     <artifactId>Booking</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Booking2</name>
-    <description>Booking2</description>
+    <name>Booking</name>
+    <description>Booking</description>
     <url/>
     <licenses>
         <license/>
