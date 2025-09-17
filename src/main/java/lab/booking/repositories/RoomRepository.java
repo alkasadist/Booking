@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Integer> {
@@ -20,4 +21,6 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
         """)
     List<Room> findAvailableRooms(@Param("fromDate") LocalDateTime fromDate,
                                   @Param("toDate") LocalDateTime toDate);
+
+    Optional<Room> findByNumber(Integer number);
 }

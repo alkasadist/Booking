@@ -3,6 +3,7 @@ package lab.booking.services;
 import lab.booking.enums.*;
 import lab.booking.models.*;
 import lab.booking.repositories.*;
+import lab.booking.exceptions.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,14 @@ public class BookingService {
     private final RoomRepository roomRepository;
     private final ReservationRepository reservationRepository;
 
-    // === USERS ===
+    // ================= USERS =================
 
     public User createUser(String name, UserRole role) {
         return userRepository.save(new User(name, role));
+    }
+
+    public void deleteUser(Integer id) {
+        userRepository.delete(getUserById(id));
     }
 
     public List<User> getAllUsers() {
@@ -31,13 +36,27 @@ public class BookingService {
 
     public User getUserById(Integer id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
-    // === ROOMS ===
+    public void updateUserName(Integer id, String name) {
+        int updated = userRepository.updateUserName(id, name);
+        if (updated == 0) throw new UserNotFoundException(id);
+    }
+
+    // ================= ROOMS =================
 
     public Room createRoom(Integer number, RoomType type) {
         return roomRepository.save(new Room(number, type));
+    }
+
+    public void deleteRoom(Integer number) {
+        roomRepository.delete(getRoomByNumber(number));
+    }
+
+    public Room getRoomByNumber(Integer number) {
+        return roomRepository.findByNumber(number)
+                .orElseThrow(() -> new RoomNotFoundException(number));
     }
 
     public List<Room> getAllRooms() {
@@ -48,14 +67,14 @@ public class BookingService {
         return roomRepository.findAvailableRooms(fromDate, toDate);
     }
 
-    // === RESERVATIONS ===
+    // ================= RESERVATIONS =================
 
     @Transactional
     public Reservation createReservation(Integer guestId, Integer roomNumber,
                                          LocalDateTime fromDate, LocalDateTime toDate) {
         User guest = getUserById(guestId);
         Room room = roomRepository.findById(roomNumber)
-                .orElseThrow(() -> new RuntimeException("Комната не найдена"));
+                .orElseThrow(() -> new RuntimeException("Room not found"));
 
         return reservationRepository.save(new Reservation(guest, room, fromDate, toDate));
     }
