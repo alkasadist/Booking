@@ -1,13 +1,9 @@
 package lab.booking.services;
 
-import lab.booking.enums.RoomType;
-import lab.booking.enums.UserRole;
-import lab.booking.models.Reservation;
-import lab.booking.models.Room;
-import lab.booking.models.User;
-import lab.booking.repositories.ReservationRepository;
-import lab.booking.repositories.RoomRepository;
-import lab.booking.repositories.UserRepository;
+import lab.booking.enums.*;
+import lab.booking.models.*;
+import lab.booking.repositories.*;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
