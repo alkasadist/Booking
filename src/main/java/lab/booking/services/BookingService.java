@@ -73,10 +73,14 @@ public class BookingService {
     public Reservation createReservation(Integer guestId, Integer roomNumber,
                                          LocalDateTime fromDate, LocalDateTime toDate) {
         User guest = getUserById(guestId);
-        Room room = roomRepository.findById(roomNumber)
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+        Room room = getRoomByNumber(roomNumber);
 
         return reservationRepository.save(new Reservation(guest, room, fromDate, toDate));
+    }
+
+    public Reservation getReservationById(Integer id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
     }
 
     public List<Reservation> getAllReservations() {
