@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -41,7 +41,9 @@ public class BookingController {
                     description = "List of users returned successfully",
                     content = @Content(
                             mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = User.class))
+                            array = @ArraySchema(schema = @Schema(
+                                    implementation = User.class)
+                            )
                     )
             ),
             @ApiResponse(
@@ -49,7 +51,9 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
@@ -77,7 +81,9 @@ public class BookingController {
                     description = "User not found",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "User with id 123 not found")
+                            schema = @Schema(type = "string",
+                                    example = "User with id 123 not found"
+                            )
                     )
             ),
             @ApiResponse(
@@ -85,7 +91,9 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
@@ -116,7 +124,9 @@ public class BookingController {
                     description = "Invalid data provided",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Invalid user data")
+                            schema = @Schema(type = "string",
+                                    example = "Invalid user data"
+                            )
                     )
             ),
             @ApiResponse(
@@ -124,7 +134,9 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
@@ -147,7 +159,9 @@ public class BookingController {
                     description = "User updated successfully",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "User updated successfully")
+                            schema = @Schema(type = "string",
+                                    example = "User updated successfully"
+                            )
                     )
             ),
             @ApiResponse(
@@ -155,7 +169,9 @@ public class BookingController {
                     description = "User not found",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "User with id 123 not found")
+                            schema = @Schema(type = "string",
+                                    example = "User with id 123 not found"
+                            )
                     )
             ),
             @ApiResponse(
@@ -163,7 +179,9 @@ public class BookingController {
                     description = "Invalid data provided",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Invalid user data")
+                            schema = @Schema(type = "string",
+                                    example = "Invalid user data"
+                            )
                     )
             ),
             @ApiResponse(
@@ -171,7 +189,9 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(
+                                    type = "string", example = "Internal server error"
+                            )
                     )
             )
     })
@@ -197,7 +217,9 @@ public class BookingController {
                     description = "User deleted successfully",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "User deleted successfully")
+                            schema = @Schema(type = "string",
+                                    example = "User deleted successfully"
+                            )
                     )
             ),
             @ApiResponse(
@@ -205,7 +227,9 @@ public class BookingController {
                     description = "User not found",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "User with id 123 not found")
+                            schema = @Schema(type = "string",
+                                    example = "User with id 123 not found"
+                            )
                     )
             ),
             @ApiResponse(
@@ -213,7 +237,9 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
@@ -238,7 +264,9 @@ public class BookingController {
                     description = "List of rooms returned successfully",
                     content = @Content(
                             mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Room.class))
+                            array = @ArraySchema(schema = @Schema(
+                                    implementation = Room.class)
+                            )
                     )
             ),
             @ApiResponse(
@@ -246,7 +274,9 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
@@ -274,7 +304,10 @@ public class BookingController {
                     description = "Room not found",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Room with number 101 not found")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Room with number 101 not found"
+                            )
                     )
             ),
             @ApiResponse(
@@ -282,7 +315,9 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
@@ -305,7 +340,9 @@ public class BookingController {
                     description = "List of available rooms",
                     content = @Content(
                             mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Room.class))
+                            array = @ArraySchema(schema = @Schema(
+                                    implementation = Room.class)
+                            )
                     )
             ),
             @ApiResponse(
@@ -313,7 +350,10 @@ public class BookingController {
                     description = "Invalid date format or date range",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Invalid date format. Use ISO format: 2025-10-01T15:00:00")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Invalid date format. Use ISO format: 2025-10-31"
+                            )
                     )
             ),
             @ApiResponse(
@@ -321,27 +361,32 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
     public ResponseEntity<Object> getAvailableRooms(
-            @Parameter(description = "Check-in date (2025-10-01T15:00:00)")
+            @Parameter(description = "Check-in date (2025-10-31)")
             @RequestParam String fromDate,
-            @Parameter(description = "Check-out date (2025-10-05T11:00:00)")
+            @Parameter(description = "Check-out date (2025-10-31)")
             @RequestParam String toDate) {
         try {
-            LocalDateTime from = LocalDateTime.parse(fromDate);
-            LocalDateTime to = LocalDateTime.parse(toDate);
+            LocalDate from = LocalDate.parse(fromDate);
+            LocalDate to = LocalDate.parse(toDate);
 
             if (from.isAfter(to)) {
-                return ResponseEntity.badRequest().body("Check-in date must be before check-out date");
+                return ResponseEntity.badRequest()
+                        .body("Check-in date must be before check-out date");
             }
 
             List<Room> rooms = bookingService.getAvailableRooms(from, to);
             return ResponseEntity.ok(rooms);
         } catch (java.time.format.DateTimeParseException e) {
-            return ResponseEntity.badRequest().body("Invalid date format. Use ISO format: 2025-10-01T15:00:00");
+            return ResponseEntity.badRequest()
+                    .body("Invalid date format. Use ISO format: 2025-10-31");
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body("Internal server error");
         }
@@ -363,7 +408,10 @@ public class BookingController {
                     description = "Invalid data or room already exists",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Room with this number already exists")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Room with this number already exists"
+                            )
                     )
             ),
             @ApiResponse(
@@ -371,7 +419,10 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
@@ -394,7 +445,10 @@ public class BookingController {
                     description = "Room deleted successfully",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Room deleted successfully")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Room deleted successfully"
+                            )
                     )
             ),
             @ApiResponse(
@@ -402,7 +456,10 @@ public class BookingController {
                     description = "Room not found",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Room with number 101 not found")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Room with number 101 not found"
+                            )
                     )
             ),
             @ApiResponse(
@@ -410,7 +467,10 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
@@ -435,7 +495,9 @@ public class BookingController {
                     description = "List of reservations returned successfully",
                     content = @Content(
                             mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Reservation.class))
+                            array = @ArraySchema(schema = @Schema(
+                                    implementation = Reservation.class)
+                            )
                     )
             ),
             @ApiResponse(
@@ -443,7 +505,10 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
@@ -463,7 +528,9 @@ public class BookingController {
                     description = "User reservations returned successfully",
                     content = @Content(
                             mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Reservation.class))
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = Reservation.class)
+                            )
                     )
             ),
             @ApiResponse(
@@ -471,7 +538,10 @@ public class BookingController {
                     description = "User not found",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "User with id 123 not found")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "User with id 123 not found"
+                            )
                     )
             ),
             @ApiResponse(
@@ -479,7 +549,10 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
@@ -510,7 +583,10 @@ public class BookingController {
                     description = "Invalid data, room unavailable, or date conflicts",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Room is not available for the selected dates")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Room is not available for the selected dates"
+                            )
                     )
             ),
             @ApiResponse(
@@ -518,7 +594,10 @@ public class BookingController {
                     description = "User or room not found",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "User with id 123 not found")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "User with id 123 not found"
+                            )
                     )
             ),
             @ApiResponse(
@@ -526,17 +605,21 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
     public ResponseEntity<Object> createReservation(@RequestBody CreateReservationRequest request) {
         try {
-            LocalDateTime from = LocalDateTime.parse(request.getFromDate());
-            LocalDateTime to = LocalDateTime.parse(request.getToDate());
+            LocalDate from = LocalDate.parse(request.getFromDate());
+            LocalDate to = LocalDate.parse(request.getToDate());
 
             if (from.isAfter(to)) {
-                return ResponseEntity.badRequest().body("Check-in date must be before check-out date");
+                return ResponseEntity.badRequest()
+                        .body("Check-in date must be before check-out date");
             }
 
             Reservation reservation = bookingService.createReservation(
@@ -547,15 +630,20 @@ public class BookingController {
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
         } catch (UserNotFoundException e) {
-            return ResponseEntity.status(404).body("User with id " + request.getGuestId() + " not found");
+            return ResponseEntity.status(404)
+                    .body("User with id " + request.getGuestId() + " not found");
         } catch (RoomNotFoundException e) {
-            return ResponseEntity.status(404).body("Room with number " + request.getRoomNumber() + " not found");
+            return ResponseEntity.status(404)
+                    .body("Room with number " + request.getRoomNumber() + " not found");
         } catch (java.time.format.DateTimeParseException e) {
-            return ResponseEntity.badRequest().body("Invalid date format. Use ISO format: 2025-10-01T15:00:00");
+            return ResponseEntity.badRequest()
+                    .body("Invalid date format. Use ISO format: 2025-10-01");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid reservation data: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body("Invalid reservation data: " + e.getMessage());
         } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body("Internal server error");
+            return ResponseEntity.status(500)
+                    .body("Internal server error");
         }
     }
 
@@ -567,7 +655,10 @@ public class BookingController {
                     description = "Reservation cancelled successfully",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Reservation cancelled successfully")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Reservation cancelled successfully"
+                            )
                     )
             ),
             @ApiResponse(
@@ -575,7 +666,10 @@ public class BookingController {
                     description = "Reservation not found",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Reservation with id 123 not found")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Reservation with id 123 not found"
+                            )
                     )
             ),
             @ApiResponse(
@@ -583,7 +677,10 @@ public class BookingController {
                     description = "Internal server error",
                     content = @Content(
                             mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Internal server error")
+                            schema = @Schema(
+                                    type = "string",
+                                    example = "Internal server error"
+                            )
                     )
             )
     })
@@ -640,10 +737,10 @@ public class BookingController {
         @Schema(description = "Number of the room to reserve", example = "101")
         private Integer roomNumber;
 
-        @Schema(description = "Check-in date and time", example = "2025-10-01T15:00:00")
+        @Schema(description = "Check-in date and time", example = "2025-10-31")
         private String fromDate;
 
-        @Schema(description = "Check-out date and time", example = "2025-10-05T11:00:00")
+        @Schema(description = "Check-out date and time", example = "2025-10-31")
         private String toDate;
     }
 }

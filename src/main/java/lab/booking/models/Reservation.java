@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,15 +26,15 @@ public class Reservation {
     private Room room;
 
     @Column(name = "from_date", nullable = false)
-    private LocalDateTime fromDate;
+    private LocalDate fromDate;
 
     @Column(name = "to_date", nullable = false)
-    private LocalDateTime toDate;
+    private LocalDate toDate;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public Reservation(User guest, Room room, LocalDateTime fromDate, LocalDateTime toDate) {
+    public Reservation(User guest, Room room, LocalDate fromDate, LocalDate toDate) {
         this.guest = guest;
         this.room = room;
         this.fromDate = fromDate;

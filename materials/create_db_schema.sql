@@ -34,13 +34,13 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE main.reservations (
-    id integer NOT NULL,
-    guest integer NOT NULL,
-    room integer NOT NULL,
-    from_date timestamp without time zone NOT NULL,
-    to_date timestamp without time zone NOT NULL,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT reservations_check CHECK ((to_date > from_date))
+   id integer NOT NULL,
+   guest integer NOT NULL,
+   room integer NOT NULL,
+   from_date date NOT NULL,
+   to_date date NOT NULL,
+   created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+   CONSTRAINT reservations_check CHECK ((to_date > from_date))
 );
 
 
@@ -172,4 +172,3 @@ ALTER TABLE ONLY main.reservations
 --
 -- PostgreSQL database dump complete
 --
-

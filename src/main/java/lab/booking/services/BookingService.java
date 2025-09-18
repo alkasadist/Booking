@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -63,7 +63,7 @@ public class BookingService {
         return roomRepository.findAll();
     }
 
-    public List<Room> getAvailableRooms(LocalDateTime fromDate, LocalDateTime toDate) {
+    public List<Room> getAvailableRooms(LocalDate fromDate, LocalDate toDate) {
         return roomRepository.findAvailableRooms(fromDate, toDate);
     }
 
@@ -71,7 +71,7 @@ public class BookingService {
 
     @Transactional
     public Reservation createReservation(Integer guestId, Integer roomNumber,
-                                         LocalDateTime fromDate, LocalDateTime toDate) {
+                                         LocalDate fromDate, LocalDate toDate) {
         User guest = getUserById(guestId);
         Room room = getRoomByNumber(roomNumber);
 
