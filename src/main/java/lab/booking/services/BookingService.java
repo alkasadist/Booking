@@ -91,7 +91,7 @@ public class BookingService {
         return reservationRepository.findByGuestId(guestId);
     }
 
-    public void cancelReservation(Integer reservationId) {
-        reservationRepository.deleteById(reservationId);
+    public void cancelReservation(Integer id) {
+        reservationRepository.delete(getReservationById(id));
     }
 }

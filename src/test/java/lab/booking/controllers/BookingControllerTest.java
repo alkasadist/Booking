@@ -1,6 +1,7 @@
 package lab.booking.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lab.booking.exceptions.ReservationNotFoundException;
 import lab.booking.exceptions.UserNotFoundException;
 import lab.booking.exceptions.RoomNotFoundException;
 import lab.booking.models.User;
@@ -594,17 +595,20 @@ class BookingControllerTest {
     @Test
     void cancelReservation_WithNonExistingId_ShouldReturn404() {
         // Arrange
-        doThrow(new RuntimeException("Reservation not found"))
-                .when(bookingService).cancelReservation(999);
+        Integer reservationId = 999;
+
+        doThrow(new ReservationNotFoundException(reservationId))
+                .when(bookingService).cancelReservation(reservationId);
 
         // Act
         ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/reservations/999", HttpMethod.DELETE, null, String.class);
+                baseUrl + "/reservations/" + reservationId, HttpMethod.DELETE, null, String.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody()).isEqualTo("Reservation with id 999 not found");
+        assertThat(response.getBody())
+                .isEqualTo("Reservation with id " + reservationId + " not found");
 
-        verify(bookingService, times(1)).cancelReservation(999);
+        verify(bookingService, times(1)).cancelReservation(reservationId);
     }
 }
