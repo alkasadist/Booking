@@ -704,7 +704,7 @@ public class BookingController {
         @Schema(description = "User's name", example = "John Doe")
         private String name;
 
-        @Schema(description = "User's role", example = "GUEST")
+        @Schema(description = "User's role", example = "USER")
         private UserRole role;
     }
 
