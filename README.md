@@ -7,7 +7,7 @@
 
 Весь код находится в `src/main/java/lab/booking`:
 - Взаимодействие с БД происходит через репозитории в `repositories/`, сцепленные вместе через
-`BookingService`, всё взаимодействие с которым происходит через API-контроллер `BookingController`
+`BookingService`, всё взаимодействие с которым происходит через API-контроллеры в `controllers/`
 - Модели из БД находятся в `models/`
 - Кастомные исключения в `exceptions/`
 - Тесты в `src/test/...`
@@ -22,4 +22,4 @@
 #### Запустить сервер:
 - Запустить `BookingApplication`
 - Перейти на страницу Swagger по `http://localhost:8080/swagger-ui/index.html`
-- Тесты можно запустить в `BookingControllerTest`
+- Тесты можно запустить через ПКМ по директории с тестами: `Run Tests in lab.booking.controllers`

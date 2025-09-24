@@ -1,0 +1,326 @@
+package lab.booking.controllers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lab.booking.controllers.ReservationController.CreateReservationRequest;
+import lab.booking.exceptions.ReservationNotFoundException;
+import lab.booking.exceptions.UserNotFoundException;
+import lab.booking.exceptions.RoomNotFoundException;
+import lab.booking.models.User;
+import lab.booking.models.Room;
+import lab.booking.models.Reservation;
+import lab.booking.services.BookingService;
+import lab.booking.enums.UserRole;
+import lab.booking.enums.RoomType;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
+class ReservationControllerTest {
+
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @MockBean
+    private BookingService bookingService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private String baseUrl;
+    private User testUser;
+    private Room testRoom;
+    private Reservation testReservation;
+
+    @BeforeEach
+    void setUp() {
+        baseUrl = "http://localhost:" + port + "/api/reservations";
+
+        testUser = new User();
+        testUser.setId(1);
+        testUser.setName("John Doe");
+        testUser.setRole(UserRole.USER);
+
+        testRoom = new Room();
+        testRoom.setNumber(101);
+        testRoom.setType(RoomType.ECONOMY);
+
+        testReservation = new Reservation();
+        testReservation.setId(1);
+        testReservation.setGuest(testUser);
+        testReservation.setRoom(testRoom);
+        testReservation.setFromDate(LocalDate.of(2025, 10, 1));
+        testReservation.setToDate(LocalDate.of(2025, 10, 5));
+        testReservation.setCreatedAt(LocalDateTime.now());
+    }
+
+    @Test
+    void getAllReservations_ShouldReturnReservationsList() {
+        // Arrange
+        List<Reservation> reservations = Arrays.asList(testReservation);
+        when(bookingService.getAllReservations()).thenReturn(reservations);
+
+        // Act
+        ResponseEntity<Reservation[]> response = restTemplate.getForEntity(baseUrl, Reservation[].class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).hasSize(1);
+        assertThat(response.getBody()[0].getId()).isEqualTo(1);
+        assertThat(response.getBody()[0].getGuest().getId()).isEqualTo(1);
+        assertThat(response.getBody()[0].getRoom().getNumber()).isEqualTo(101);
+
+        verify(bookingService, times(1)).getAllReservations();
+    }
+
+    @Test
+    void getAllReservations_WhenServiceThrowsException_ShouldReturn500() {
+        // Arrange
+        when(bookingService.getAllReservations()).thenThrow(new RuntimeException("Database error"));
+
+        // Act
+        ResponseEntity<String> response = restTemplate.getForEntity(baseUrl, String.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getBody()).isEqualTo("Internal server error");
+
+        verify(bookingService, times(1)).getAllReservations();
+    }
+
+    @Test
+    void getUserReservations_WithExistingUserId_ShouldReturnReservationsList() {
+        // Arrange
+        List<Reservation> reservations = Arrays.asList(testReservation);
+        when(bookingService.getUserReservations(1)).thenReturn(reservations);
+
+        // Act
+        ResponseEntity<Reservation[]> response = restTemplate.getForEntity(
+                baseUrl + "/user/1", Reservation[].class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).hasSize(1);
+        assertThat(response.getBody()[0].getGuest().getId()).isEqualTo(1);
+
+        verify(bookingService, times(1)).getUserReservations(1);
+    }
+
+    @Test
+    void getUserReservations_WithNonExistingUserId_ShouldReturn404() {
+        // Arrange
+        when(bookingService.getUserReservations(999))
+                .thenThrow(new UserNotFoundException("User not found"));
+
+        // Act
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                baseUrl + "/user/999", String.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isEqualTo("User with id 999 not found");
+
+        verify(bookingService, times(1)).getUserReservations(999);
+    }
+
+    @Test
+    void createReservation_WithValidData_ShouldReturnCreatedReservation() {
+        // Arrange
+        CreateReservationRequest request = new CreateReservationRequest();
+        request.setGuestId(1);
+        request.setRoomNumber(101);
+        request.setFromDate("2025-10-01");
+        request.setToDate("2025-10-05");
+
+        when(bookingService.createReservation(1, 101,
+                LocalDate.of(2025, 10, 1), LocalDate.of(2025, 10, 5)))
+                .thenReturn(testReservation);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<CreateReservationRequest> entity = new HttpEntity<>(request, headers);
+
+        // Act
+        ResponseEntity<Reservation> response = restTemplate.postForEntity(baseUrl, entity, Reservation.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getGuest().getId()).isEqualTo(1);
+        assertThat(response.getBody().getRoom().getNumber()).isEqualTo(101);
+
+        verify(bookingService, times(1)).createReservation(1, 101,
+                LocalDate.of(2025, 10, 1), LocalDate.of(2025, 10, 5));
+    }
+
+    @Test
+    void createReservation_WithNonExistingUser_ShouldReturn404() {
+        // Arrange
+        CreateReservationRequest request = new CreateReservationRequest();
+        request.setGuestId(999);
+        request.setRoomNumber(101);
+        request.setFromDate("2025-10-01");
+        request.setToDate("2025-10-05");
+
+        when(bookingService.createReservation(eq(999), eq(101), any(LocalDate.class), any(LocalDate.class)))
+                .thenThrow(new UserNotFoundException("User not found"));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<CreateReservationRequest> entity = new HttpEntity<>(request, headers);
+
+        // Act
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrl, entity, String.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isEqualTo("User with id 999 not found");
+    }
+
+    @Test
+    void createReservation_WithNonExistingRoom_ShouldReturn404() {
+        // Arrange
+        CreateReservationRequest request = new CreateReservationRequest();
+        request.setGuestId(1);
+        request.setRoomNumber(999);
+        request.setFromDate("2025-10-01");
+        request.setToDate("2025-10-05");
+
+        when(bookingService.createReservation(eq(1), eq(999), any(LocalDate.class), any(LocalDate.class)))
+                .thenThrow(new RoomNotFoundException("Room not found"));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<CreateReservationRequest> entity = new HttpEntity<>(request, headers);
+
+        // Act
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrl, entity, String.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isEqualTo("Room with number 999 not found");
+    }
+
+    @Test
+    void createReservation_WithInvalidDateFormat_ShouldReturn400() {
+        // Arrange
+        CreateReservationRequest request = new CreateReservationRequest();
+        request.setGuestId(1);
+        request.setRoomNumber(101);
+        request.setFromDate("invalid-date");
+        request.setToDate("2025-10-05");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<CreateReservationRequest> entity = new HttpEntity<>(request, headers);
+
+        // Act
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrl, entity, String.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).contains("Invalid date format");
+    }
+
+    @Test
+    void createReservation_WithFromDateAfterToDate_ShouldReturn400() {
+        // Arrange
+        CreateReservationRequest request = new CreateReservationRequest();
+        request.setGuestId(1);
+        request.setRoomNumber(101);
+        request.setFromDate("2025-10-10");
+        request.setToDate("2025-10-05");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<CreateReservationRequest> entity = new HttpEntity<>(request, headers);
+
+        // Act
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrl, entity, String.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isEqualTo("Check-in date must be before check-out date");
+    }
+
+    @Test
+    void createReservation_WithInvalidData_ShouldReturn400() {
+        // Arrange
+        CreateReservationRequest request = new CreateReservationRequest();
+        request.setGuestId(1);
+        request.setRoomNumber(101);
+        request.setFromDate("2025-10-01");
+        request.setToDate("2025-10-05");
+
+        when(bookingService.createReservation(eq(1), eq(101), any(LocalDate.class), any(LocalDate.class)))
+                .thenThrow(new IllegalArgumentException("Room is not available"));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<CreateReservationRequest> entity = new HttpEntity<>(request, headers);
+
+        // Act
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrl, entity, String.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).contains("Invalid reservation data");
+    }
+
+    @Test
+    void cancelReservation_WithExistingId_ShouldReturnSuccessMessage() {
+        // Arrange
+        doNothing().when(bookingService).cancelReservation(1);
+
+        // Act
+        ResponseEntity<String> response = restTemplate.exchange(
+                baseUrl + "/1", HttpMethod.DELETE, null, String.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo("Reservation cancelled successfully");
+
+        verify(bookingService, times(1)).cancelReservation(1);
+    }
+
+    @Test
+    void cancelReservation_WithNonExistingId_ShouldReturn404() {
+        // Arrange
+        Integer reservationId = 999;
+
+        doThrow(new ReservationNotFoundException(reservationId))
+                .when(bookingService).cancelReservation(reservationId);
+
+        // Act
+        ResponseEntity<String> response = restTemplate.exchange(
+                baseUrl + "/" + reservationId, HttpMethod.DELETE, null, String.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody())
+                .isEqualTo("Reservation with id " + reservationId + " not found");
+
+        verify(bookingService, times(1)).cancelReservation(reservationId);
+    }
+}
