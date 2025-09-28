@@ -6,12 +6,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lab.booking.exceptions.*;
 import lab.booking.models.*;
-import lab.booking.enums.*;
 import lab.booking.services.BookingService;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/reservations")
 @RequiredArgsConstructor
@@ -56,9 +58,13 @@ public class ReservationController {
             )
     })
     public ResponseEntity<Object> getAllReservations() {
+        log.info("Getting all reservations");
         try {
-            return ResponseEntity.ok(bookingService.getAllReservations());
+            List<Reservation> reservations = bookingService.getAllReservations();
+            log.info("Retrieved {} reservations", reservations.size());
+            return ResponseEntity.ok(reservations);
         } catch (RuntimeException e) {
+            log.error("Error getting all reservations", e);
             return ResponseEntity.status(500).body("Internal server error");
         }
     }
@@ -100,12 +106,16 @@ public class ReservationController {
             )
     })
     public ResponseEntity<Object> getUserReservations(@PathVariable Integer userId) {
+        log.info("Getting reservations for user {}", userId);
         try {
             List<Reservation> reservations = bookingService.getUserReservations(userId);
+            log.info("Found {} reservations for user {}", reservations.size(), userId);
             return ResponseEntity.ok(reservations);
         } catch (UserNotFoundException e) {
+            log.warn("User not found: {}", userId);
             return ResponseEntity.status(404).body("User with id " + userId + " not found");
         } catch (RuntimeException e) {
+            log.error("Error getting reservations for user {}", userId, e);
             return ResponseEntity.status(500).body("Internal server error");
         }
     }
@@ -156,11 +166,15 @@ public class ReservationController {
             )
     })
     public ResponseEntity<Object> createReservation(@RequestBody CreateReservationRequest request) {
+        log.info("Creating reservation for user {} in room {} from {} to {}",
+                request.getGuestId(), request.getRoomNumber(), request.getFromDate(), request.getToDate());
+
         try {
             LocalDate from = LocalDate.parse(request.getFromDate());
             LocalDate to = LocalDate.parse(request.getToDate());
 
             if (from.isAfter(to)) {
+                log.warn("Invalid date range: from {} is after to {}", from, to);
                 return ResponseEntity.badRequest()
                         .body("Check-in date must be before check-out date");
             }
@@ -171,20 +185,26 @@ public class ReservationController {
                     from,
                     to
             );
+            log.info("Reservation created successfully with ID {}", reservation.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
         } catch (UserNotFoundException e) {
+            log.warn("User not found: {}", request.getGuestId());
             return ResponseEntity.status(404)
                     .body("User with id " + request.getGuestId() + " not found");
         } catch (RoomNotFoundException e) {
+            log.warn("Room not found: {}", request.getRoomNumber());
             return ResponseEntity.status(404)
                     .body("Room with number " + request.getRoomNumber() + " not found");
         } catch (java.time.format.DateTimeParseException e) {
+            log.warn("Invalid date format in request: from={}, to={}", request.getFromDate(), request.getToDate());
             return ResponseEntity.badRequest()
                     .body("Invalid date format. Use ISO format: 2025-10-01");
         } catch (IllegalArgumentException e) {
+            log.warn("Invalid reservation data: {}", e.getMessage());
             return ResponseEntity.badRequest()
                     .body("Invalid reservation data: " + e.getMessage());
         } catch (RuntimeException e) {
+            log.error("Error creating reservation", e);
             return ResponseEntity.status(500)
                     .body("Internal server error");
         }
@@ -228,12 +248,16 @@ public class ReservationController {
             )
     })
     public ResponseEntity<String> cancelReservation(@PathVariable Integer id) {
+        log.info("Cancelling reservation {}", id);
         try {
             bookingService.cancelReservation(id);
+            log.info("Reservation {} cancelled successfully", id);
             return ResponseEntity.ok("Reservation cancelled successfully");
         } catch (ReservationNotFoundException e) {
+            log.warn("Reservation not found: {}", id);
             return ResponseEntity.status(404).body("Reservation with id " + id + " not found");
         } catch (RuntimeException e) {
+            log.error("Error cancelling reservation {}", id, e);
             return ResponseEntity.status(500).body("Internal server error");
         }
     }
