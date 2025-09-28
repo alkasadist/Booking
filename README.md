@@ -23,3 +23,5 @@
 - Запустить `BookingApplication`
 - Перейти на страницу Swagger по `http://localhost:8080/swagger-ui/index.html`
 - Тесты можно запустить через ПКМ по директории с тестами: `Run Tests in lab.booking.controllers`
+#### Переключить режим логгера:
+- В `application.properties` раскомментируйте строчку `logging.file.name=logs/booking.log`
