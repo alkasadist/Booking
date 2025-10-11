@@ -12,6 +12,8 @@ import lab.booking.services.BookingService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/rooms")
 @RequiredArgsConstructor
@@ -56,9 +59,13 @@ public class RoomController {
             )
     })
     public ResponseEntity<Object> getAllRooms() {
+        log.info("Getting all rooms");
         try {
-            return ResponseEntity.ok(bookingService.getAllRooms());
+            List<Room> rooms = bookingService.getAllRooms();
+            log.info("Retrieved {} rooms", rooms.size());
+            return ResponseEntity.ok(rooms);
         } catch (RuntimeException e) {
+            log.error("Error getting all rooms", e);
             return ResponseEntity.status(500).body("Internal server error");
         }
     }
@@ -97,12 +104,16 @@ public class RoomController {
             )
     })
     public ResponseEntity<Object> getRoomByNumber(@PathVariable Integer number) {
+        log.info("Getting room by number {}", number);
         try {
             Room room = bookingService.getRoomByNumber(number);
+            log.info("Found room {} of type {}", number, room.getType());
             return ResponseEntity.ok(room);
         } catch (RoomNotFoundException e) {
+            log.warn("Room not found: {}", number);
             return ResponseEntity.status(404).body("Room with number " + number + " not found");
         } catch (RuntimeException e) {
+            log.error("Error getting room {}", number, e);
             return ResponseEntity.status(500).body("Internal server error");
         }
     }
@@ -148,21 +159,26 @@ public class RoomController {
             @RequestParam String fromDate,
             @Parameter(description = "Check-out date (2025-10-31)")
             @RequestParam String toDate) {
+        log.info("Searching available rooms from {} to {}", fromDate, toDate);
         try {
             LocalDate from = LocalDate.parse(fromDate);
             LocalDate to = LocalDate.parse(toDate);
 
             if (from.isAfter(to)) {
+                log.warn("Invalid date range: from {} is after to {}", from, to);
                 return ResponseEntity.badRequest()
                         .body("Check-in date must be before check-out date");
             }
 
             List<Room> rooms = bookingService.getAvailableRooms(from, to);
+            log.info("Found {} available rooms for period {} to {}", rooms.size(), from, to);
             return ResponseEntity.ok(rooms);
         } catch (java.time.format.DateTimeParseException e) {
+            log.warn("Invalid date format: from={}, to={}", fromDate, toDate);
             return ResponseEntity.badRequest()
                     .body("Invalid date format. Use ISO format: 2025-10-31");
         } catch (RuntimeException e) {
+            log.error("Error searching available rooms", e);
             return ResponseEntity.status(500).body("Internal server error");
         }
     }
@@ -202,12 +218,16 @@ public class RoomController {
             )
     })
     public ResponseEntity<Object> createRoom(@RequestBody CreateRoomRequest request) {
+        log.info("Creating room {} of type {}", request.getNumber(), request.getType());
         try {
             Room room = bookingService.createRoom(request.getNumber(), request.getType());
+            log.info("Room {} created successfully", request.getNumber());
             return ResponseEntity.status(HttpStatus.CREATED).body(room);
         } catch (IllegalArgumentException e) {
+            log.warn("Invalid room data: {}", e.getMessage());
             return ResponseEntity.badRequest().body("Invalid room data: " + e.getMessage());
         } catch (RuntimeException e) {
+            log.error("Error creating room {}", request.getNumber(), e);
             return ResponseEntity.status(500).body("Internal server error");
         }
     }
@@ -250,12 +270,16 @@ public class RoomController {
             )
     })
     public ResponseEntity<String> deleteRoom(@PathVariable Integer number) {
+        log.info("Deleting room {}", number);
         try {
             bookingService.deleteRoom(number);
+            log.info("Room {} deleted successfully", number);
             return ResponseEntity.ok("Room deleted successfully");
         } catch (RoomNotFoundException e) {
+            log.warn("Room not found for deletion: {}", number);
             return ResponseEntity.status(404).body("Room with number " + number + " not found");
         } catch (RuntimeException e) {
+            log.error("Error deleting room {}", number, e);
             return ResponseEntity.status(500).body("Internal server error");
         }
     }
